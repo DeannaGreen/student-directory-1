@@ -1,43 +1,53 @@
 def interactive_menu
-  students = []
+  @students = []
   loop do
-    puts "1. Input the students"
-    puts "2. Show the students"
-    puts "9. Exit"
-    selection = gets.chomp
-    case selection
-    when "1"
-      students = input_students
-    when "2"
-      print_header
-      print(students)
-      print_footer(students)
-    when "9"
-      exit
-    else
-      puts "I don't know what you meant, try again"
-    end
+    print_menu
+    process(gets.chomp)
   end
+end
+
+def process(selection)
+  case selection
+  when "1"
+    students = input_students
+  when "2"
+    show_students
+  when "9"
+    exit
+  else
+    puts "I don't know what you meant, try again"
+  end
+end
+
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "9. Exit"
+end
+
+def show_students
+  print_header
+  print_student_list(@students)
+  print_footer(@students)
 end
 
 def input_students
   puts "Please enter the names of the students and their cohort"
   puts "To finish, just hit return twice"
-  students = []
   name = gets.chop
   cohort = gets.chomp.to_sym
   cohort = :january if cohort.empty?
   while !name.empty? do
-    students << {name: name, cohort: cohort, hobbie: :coding}
-    if students.length == 1
-      puts "Now we have #{students.count} student"
+    @students << {name: name, cohort: cohort, hobbie: :coding}
+    if @students.length == 1
+      puts "Now we have #{@students.count} student"
     else
-      puts "Now we have #{students.count} students"
+      puts "Now we have #{@students.count} students"
     end
     name = gets.chomp
     cohort= gets.chomp
   end
-  students
+  @students
 end
 
 def print_header
@@ -45,7 +55,7 @@ def print_header
   puts "-------------".center(120)
 end
 
-def print(students)
+def print_student_list(students)
   if students.length != 0
     students.each_with_index do |student, index|
       puts "#{index}: #{student[:name]} (#{student[:cohort]} cohort) hobbie: #{student[:hobbie]}".center(120)
