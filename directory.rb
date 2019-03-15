@@ -72,7 +72,7 @@ def print_footer(names)
 end
 
 def save_students
-  file = File.open("studnets.csv", "w")
+  file = File.open("students.csv", "w")
   @students.each do |student|
     student_data = [student[:name], student[:cohort]]
     csv_line = student_data.join(",")
