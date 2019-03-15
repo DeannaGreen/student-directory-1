@@ -1,20 +1,22 @@
 @students = []
 
 def input_students
-  puts "Please enter the names of the students and their cohort"
+  puts "Please enter the names of the students, their cohort and their hobbie"
   puts "To finish, just hit return twice"
-  name = gets.chop
-  cohort = gets.chomp.to_sym
+  name = STDIN.gets.chop
+  cohort = STDIN.gets.chomp.to_sym
   cohort = :january if cohort.empty?
+  hobbie = STDIN.gets.chomp
   while !name.empty? do
-    @students << {name: name, cohort: cohort, hobbie: :coding}
+    @students << {name: name, cohort: cohort, hobbie: hobbie}
     if @students.length == 1
       puts "Now we have #{@students.count} student"
     else
       puts "Now we have #{@students.count} students"
     end
-    name = gets.chomp
-    cohort= gets.chomp
+    name = STDIN.gets.chomp
+    cohort= STDIN.gets.chomp
+    hobbie = STDIN.gets.chomp
   end
   @students
 end
@@ -22,7 +24,7 @@ end
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
@@ -43,12 +45,16 @@ end
 def process(selection)
   case selection
   when "1"
+    puts "Loading..."
     students = input_students
   when "2"
+    puts "Loading..."
     show_students
   when "3"
+    puts "Loading..."
     save_students
   when "4"
+    puts "Loading..."
     load_students
   when "9"
     exit
@@ -77,22 +83,40 @@ end
 def save_students
   file = File.open("students.csv", "w")
   @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
+    student_data = [student[:name], student[:cohort], student[:hobbie]]
     csv_line = student_data.join(",")
     file.puts csv_line
   end
   file.close
 end
 
-def load_students
-  file = File.open("students.csv", "r")
-  file.readlines.each do |line|
-    name, cohort = line.chomp.split(',')
-      @students << {name: name, cohort: cohort.to_sym}
-    end
-    file.close
+def load_students(filename = "students.csv")
+  # file = File.open(filename, "r")
+  # file.readlines.each do |line|
+  #  name, cohort = line.chomp.split(',')
+  #    @students << {name: name, cohort: cohort.to_sym}
+  #  end
+  # file.close
+
+  File.open(filename, "r") do |file|
+    file.each { |line| name, cohort = line.chomp.split(',')
+      @students << {name: name, cohort: cohort.to_sym}}
+  end
+
 end
 
+def try_load_students(filename)
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+    puts "Loaded #{@students.count} from #{filename}"
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    exit
+  end
+end
+
+try_load_students("students.csv")
 interactive_menu
 
 
@@ -124,7 +148,7 @@ end
 def print_by_cohort(students)
   #NEED TO REVISIT
   puts "Enter a cohort"
-  chosen_cohort = gets.chomp.to_sym
+  chosen_cohort = STDIN.gets.chomp.to_sym
   # students.map { |hash| hash[:cohort] == chosen_cohort  }
   students.each_with_index do |student, index|
     if :cohort == chosen_cohort
